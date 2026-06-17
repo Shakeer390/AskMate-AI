@@ -1,0 +1,46 @@
+import Chat from "../models/Chat.js";
+//API Controller for creating a new chat
+
+export const createChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const chatData = {
+      userId,
+      message: [],
+      name: "New Chat",
+      userName: req.user.name,
+    };
+    const chat = await Chat.create(chatData);
+    res.json({ success: true, message: "Chat created", chat });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+// API to get all chats
+export const getChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const chats = await Chat.find({ userId }).sort({ updatedAt: -1 });
+    console.log("req.user =", req.user);
+    console.log("req.user_id =", req.user._id);
+    res.json({ success: true, chats });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+//API Controller to  delete a chat
+export const deleteChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { chatId } = req.params;
+
+    const result = await Chat.deleteOne({ _id: chatId, userId });
+
+    res.json({ success: true, message: "Chat Deleted" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
